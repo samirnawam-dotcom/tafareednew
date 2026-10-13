@@ -777,9 +777,6 @@ header.bar.onfilm .bag{border-color:rgba(245,240,231,.4)}
   }
 
   
-/* loader */
-  var toggle=document.getElementById('toggle'),pane=document.getElementById('pane');
-  toggle.addEventListener('click',function(){pane.hidden=!pane.hidden;toggle.setAttribute('aria-expanded',String(!pane.hidden));});
   function load(src){
     status.textContent='Loading…';frames=[];mode='still';lastDrawn=-1;
     canvas.style.opacity='0';clip.hidden=true;still.style.opacity='1';
