@@ -664,7 +664,7 @@ header.bar.onfilm .bag{border-color:rgba(245,240,231,.4)}
     var cw=canvas.width,ch=canvas.height,
         s=Math.max(cw/bmp.width,ch/bmp.height)*zoom,
         w=bmp.width*s,h=bmp.height*s;
-    ctx.clearRect(0,0,cw,ch);
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.clearRect(0,0,cw,ch);
     ctx.drawImage(bmp,(cw-w)/2,(ch-h)*0.46,w,h);
   }
 
@@ -727,9 +727,15 @@ header.bar.onfilm .bag{border-color:rgba(245,240,231,.4)}
   function extract(){
     var dur=clip.duration;
     if(!isFinite(dur)||dur<=0){useVideo();return;}
-    var count=Math.max(24,Math.min(110,Math.round(dur*11))),
-        scale=Math.min(1,900/clip.videoHeight),
+    // Frame size follows the viewport (capped), and the frame count is sized to a
+    // memory budget so a sharper frame simply means fewer of them.
+    var dpr=Math.min(window.devicePixelRatio||1,2),
+        want=Math.min(1600,Math.max(760,Math.round(window.innerHeight*dpr))),
+        scale=Math.min(1,want/clip.videoHeight),
         w=Math.round(clip.videoWidth*scale),h=Math.round(clip.videoHeight*scale),
+        budget=260*1024*1024,
+        affordable=Math.floor(budget/(w*h*4)),
+        count=Math.max(32,Math.min(110,Math.min(Math.round(dur*11),affordable))),
         off=document.createElement('canvas');
     off.width=w;off.height=h;
     var octx=off.getContext('2d'), i=0;
